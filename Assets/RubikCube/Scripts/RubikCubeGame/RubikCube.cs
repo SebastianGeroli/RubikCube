@@ -37,12 +37,17 @@ namespace RubikCubeGame
 
         void Rotate()
         {
+            //transform.forward is for AuxColumn rotation
+            //transform.up is for Row rotation
+            //transform.right is for Column rotation
             int[] pivotsToRotate = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+            var rotationToAdd = Quaternion.AngleAxis(-90,transform.right);
+            
             foreach (var pivotID in pivotsToRotate)
             {
                 if (_pivotDictionary.TryGetValue(pivotID, out var pivot))
                 {
-                    pivot.RotatePiece();
+                    pivot.RotatePiece(rotationToAdd);
                 }
             }
         }
