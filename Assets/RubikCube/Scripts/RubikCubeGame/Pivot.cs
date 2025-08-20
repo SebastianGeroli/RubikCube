@@ -34,7 +34,7 @@ namespace RubikCubeGame
             var elapsedTime = 0f;
             var rotationDuration = 3f;
             var targetPivot = _rotationData.Column.NextPivot;
-            var originalTransform = pieceToMove.transform;
+            var originalTransform = transform;
             while (elapsedTime < rotationDuration)
             {
                 elapsedTime += Time.deltaTime;
