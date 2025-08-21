@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2bbc87faaa3ebe40938cb225025eb7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RubikCube
+  _rotationDuration: 0.5
   _pivots:
   - {fileID: 7092179822747724921}
   - {fileID: 4128307245380945722}
@@ -3262,7 +3263,7 @@ PrefabInstance:
     - target: {fileID: 2886657664644063375, guid: a5b4e9c6e6daf384fb4926f85eb73b8e, type: 3}
       propertyPath: _piece
       value: 
-      objectReference: {fileID: 2702011370438391419}
+      objectReference: {fileID: 8411233512713452154}
     - target: {fileID: 2886657664644063375, guid: a5b4e9c6e6daf384fb4926f85eb73b8e, type: 3}
       propertyPath: _rotationData._row._nextPivot
       value: 
