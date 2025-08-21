@@ -12,7 +12,8 @@ namespace RubikCubeGame
         public int ID => _id;
 
         bool _isMovingPiece;
-
+        public int PieceID => _piece != null ? _piece.ID : -1;
+        
         public void Awake()
         {
             _piece.SetID(_id);
