@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RubikCubeGame
@@ -24,10 +23,10 @@ namespace RubikCubeGame
             return _isMovingPiece;
         }
 
-        public void RotatePiece(RotationType rotationType, Quaternion rotationToAdd, float rotationDuration)
+        public void RotatePiece(RotationType rotationType, Quaternion rotationToAdd, float rotationDuration,bool forward)
         {
             var rotationData = GetRotationData(rotationType);
-            StartCoroutine(RotatePieceCoroutine(rotationData, rotationToAdd, rotationDuration));
+            StartCoroutine(RotatePieceCoroutine(rotationData, rotationToAdd, rotationDuration,forward));
         }
 
         RotationData GetRotationData(RotationType rotationType)
@@ -41,12 +40,12 @@ namespace RubikCubeGame
             };
         }
 
-        IEnumerator RotatePieceCoroutine(RotationData rotationData, Quaternion rotationToAdd, float rotationDuration)
+        IEnumerator RotatePieceCoroutine(RotationData rotationData, Quaternion rotationToAdd, float rotationDuration,bool forward)
         {
             _isMovingPiece = true;
             var pieceToMove = _piece;
             var elapsedTime = 0f;
-            var targetPivot = rotationData.NextPivot;
+            var targetPivot = forward? rotationData.NextPivot : rotationData.PreviousPivot;
             var centerPivot = rotationData.CenterPivot;
             var originalTransform = transform;
             var originalRotation = pieceToMove.transform.localRotation;

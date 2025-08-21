@@ -12,6 +12,7 @@ namespace RubikCubeGame.Editor
         RubikCube _rubikCube;
         static int s_rotationIndex = 0;
         static int s_shuffleCount = 10;
+        static bool s_forward = true;
         static RotationType s_rotationType = RotationType.Column;
         void OnEnable()
         {
@@ -21,14 +22,16 @@ namespace RubikCubeGame.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
+            GUI.enabled = AllowGUI();
             EditorGUILayout.LabelField("Debug Controls");
             s_rotationIndex = EditorGUILayout.IntField("Rotation Index", s_rotationIndex);
             s_rotationType = (RotationType)EditorGUILayout.EnumPopup("Rotation Type", s_rotationType);
             s_shuffleCount = EditorGUILayout.IntField("Shuffle Count", s_shuffleCount);
-            GUI.enabled = AllowGUI();
+            s_forward = EditorGUILayout.Toggle("Forward Rotation", s_forward);
             if (GUILayout.Button("Rotate Cube"))
             {
-                _rubikCube.Rotate(s_rotationType,s_rotationIndex);
+                var command = new RubikCube.RotationCommand(_rubikCube, s_rotationType, s_rotationIndex,s_forward);
+                _rubikCube.TryExecuteCommand(command);
             }
             if (GUILayout.Button("Shuffle Cube"))
             {
@@ -58,7 +61,9 @@ namespace RubikCubeGame.Editor
             {
                 var randomRotationType = (RotationType)Random.Range(0, Enum.GetValues(typeof(RotationType)).Length);
                 var randomIndex = Random.Range(0, 2);
-                _rubikCube.Rotate(randomRotationType, randomIndex);
+                var forward = Random.value > 0.5f;
+                var command = new RubikCube.RotationCommand(_rubikCube, randomRotationType, randomIndex,forward);
+                _rubikCube.TryExecuteCommand(command);
                 await WaitForCubeToStop();
             }
         }
