@@ -31,7 +31,7 @@ namespace RubikCubeGame.Editor
             if (GUILayout.Button("Rotate Cube"))
             {
                 var command = new RubikCube.RotationCommand(_rubikCube, s_rotationType, s_rotationIndex,s_forward);
-                _rubikCube.TryExecuteCommand(command);
+                command.Execute();
             }
             if (GUILayout.Button("Shuffle Cube"))
             {
@@ -63,7 +63,7 @@ namespace RubikCubeGame.Editor
                 var randomIndex = Random.Range(0, 2);
                 var forward = Random.value > 0.5f;
                 var command = new RubikCube.RotationCommand(_rubikCube, randomRotationType, randomIndex,forward);
-                _rubikCube.TryExecuteCommand(command);
+                command.Execute();
                 await WaitForCubeToStop();
             }
         }

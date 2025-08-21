@@ -39,18 +39,6 @@ namespace RubikCubeGame
             _commandsHistory.Clear();
         }
         
-        public bool TryExecuteCommand(RotationCommand command)
-        {
-            if (IsMoving())
-            {
-                Debug.LogWarning("Cube is currently moving, cannot execute command.");
-                return false;
-            }
-            command.Execute();
-            _commandsHistory.Add(command);
-            return true;
-        }
-
         void Rotate(RotationType rotationType, int index,bool forward)
         {
             if (IsMoving())
@@ -122,7 +110,9 @@ namespace RubikCubeGame
             }
             public void Execute()
             {
+                if(_rubikCube.IsMoving()) return;
                 _rubikCube.Rotate(_rotationType,_index,_forward);
+                _rubikCube._commandsHistory.Add(this);
             }
 
             public void Undo()
