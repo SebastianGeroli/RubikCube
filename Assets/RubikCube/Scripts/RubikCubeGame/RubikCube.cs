@@ -13,8 +13,18 @@ namespace RubikCubeGame
         [SerializeField] PivotGroup[] _rows;
         [SerializeField] PivotGroup[] _auxColumns;
         
+        public void ResetCube()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Rotate(RotationType rotationType, int index)
         {
+            if (IsMoving())
+            {
+                Debug.LogWarning("Cube is currently moving, cannot rotate.");
+                return;
+            }
             var pivotsToRotate = GetPivots(rotationType,index);
             var rotationToAdd = GetRotationToAdd(rotationType);
             foreach (var pivot in pivotsToRotate)
@@ -33,7 +43,7 @@ namespace RubikCubeGame
                 _ => throw new ArgumentOutOfRangeException($"RotationType: {rotationType} is not handled")
             };
         }
-        
+
         Quaternion GetRotationToAdd(RotationType rotationType)
         {
             return rotationType switch
@@ -44,7 +54,7 @@ namespace RubikCubeGame
                 _ => throw new ArgumentOutOfRangeException($"RotationType: {rotationType} is not handled")
             };
         }
-        
+
         public bool IsMoving()
         {
             foreach (var pivot in _pivots)

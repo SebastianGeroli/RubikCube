@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RubikCubeGame
@@ -61,13 +62,12 @@ namespace RubikCubeGame
                 var newRotation = Quaternion.Slerp(originalRotation, targetRotation, elapsedTime / rotationDuration);
                 var newPosition = Vector3.Slerp(originNormalized, targetNormalized, elapsedTime / rotationDuration);
                 newPosition = centerPivot.transform.position + newPosition * magnitude;
-                pieceToMove.transform.position = newPosition;
-                pieceToMove.transform.localRotation = newRotation;
+                pieceToMove.transform.SetPositionAndRotation(newPosition, newRotation);
                 yield return null;
             }
-
-            _isMovingPiece = false;
+            pieceToMove.transform.SetPositionAndRotation(targetPivot.transform.position, targetRotation);
             targetPivot._piece = pieceToMove;
+            _isMovingPiece = false;
         }
 
 
@@ -89,8 +89,7 @@ namespace RubikCubeGame
             [SerializeField] Pivot _nextPivot;
             [SerializeField] Pivot _centerPivot;
             [SerializeField] Pivot _previousPivot;
-
-
+            
             public Pivot NextPivot => _nextPivot;
             public Pivot CenterPivot => _centerPivot;
             public Pivot PreviousPivot => _previousPivot;
