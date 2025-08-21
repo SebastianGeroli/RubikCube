@@ -2,57 +2,50 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace RubikCubeGame
 {
     public class RubikCube : MonoBehaviour
     {
         [SerializeField] Pivot[] _pivots;
-        [SerializeField] Face[] _faces;
-
-
-        Dictionary<int, Pivot> _pivotDictionary;
-
-        void Awake()
+        [SerializeField] PivotGroup[] _faces;
+        [SerializeField] PivotGroup[] _columns;
+        [SerializeField] PivotGroup[] _rows;
+        [SerializeField] PivotGroup[] _auxColumns;
+        
+        public void Rotate(RotationType rotationType, int index)
         {
-            _pivotDictionary = new Dictionary<int, Pivot>();
-            foreach (var pivot in _pivots)
+            var pivotsToRotate = GetPivots(rotationType,index);
+            var rotationToAdd = GetRotationToAdd(rotationType);
+            foreach (var pivot in pivotsToRotate)
             {
-                if (!_pivotDictionary.TryAdd(pivot.ID, pivot))
-                {
-                    Debug.LogError($"Duplicate pivot ID found: {pivot.ID}");
-                }
+                pivot.RotatePiece(rotationType,rotationToAdd);
             }
         }
 
-        IEnumerator Start()
+        Pivot[] GetPivots(RotationType rotationType, int index)
         {
-            while (true)
+            return rotationType switch
             {
-                Rotate();
-                yield return new WaitUntil(() => !IsMoving());
-            }
+                RotationType.Column => _columns[index].Pivots,
+                RotationType.Row => _rows[index].Pivots,
+                RotationType.AuxColumn => _auxColumns[index].Pivots,
+                _ => throw new ArgumentOutOfRangeException($"RotationType: {rotationType} is not handled")
+            };
         }
-
-        void Rotate()
+        
+        Quaternion GetRotationToAdd(RotationType rotationType)
         {
-            //transform.forward is for AuxColumn rotation
-            //transform.up is for Row rotation
-            //transform.right is for Column rotation
-            int[] pivotsToRotate = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-            var rotationToAdd = Quaternion.AngleAxis(-90,transform.right);
-            
-            foreach (var pivotID in pivotsToRotate)
+            return rotationType switch
             {
-                if (_pivotDictionary.TryGetValue(pivotID, out var pivot))
-                {
-                    pivot.RotatePiece(rotationToAdd);
-                }
-            }
+                RotationType.Column => Quaternion.AngleAxis(-90, transform.right),
+                RotationType.Row => Quaternion.AngleAxis(-90, transform.up),
+                RotationType.AuxColumn => Quaternion.AngleAxis(90, transform.forward),
+                _ => throw new ArgumentOutOfRangeException($"RotationType: {rotationType} is not handled")
+            };
         }
-
-        bool IsMoving()
+        
+        public bool IsMoving()
         {
             foreach (var pivot in _pivots)
             {
@@ -65,9 +58,10 @@ namespace RubikCubeGame
         }
 
         [Serializable]
-        class Face
+        class PivotGroup
         {
             [SerializeField] Pivot[] _pivots;
+            public Pivot[] Pivots => _pivots;
         }
     }
 }

@@ -22,22 +22,34 @@ namespace RubikCubeGame
             return _isMovingPiece;
         }
 
-        public void RotatePiece(Quaternion rotationToAdd)
+        public void RotatePiece(RotationType rotationType,Quaternion rotationToAdd)
         {
-            StartCoroutine(RotatePieceCoroutine(rotationToAdd));
+            var rotationData = GetRotationData(rotationType);
+            StartCoroutine(RotatePieceCoroutine(rotationData,rotationType, rotationToAdd));
         }
-
-        IEnumerator RotatePieceCoroutine(Quaternion rotationToAdd)
+        
+        RotationData GetRotationData(RotationType rotationType)
+        {
+            return rotationType switch
+            {
+                RotationType.Column => _rotationData.Column,
+                RotationType.Row => _rotationData.Row,
+                RotationType.AuxColumn => _rotationData.AuxColumn,
+                _ => throw new ArgumentOutOfRangeException($"RotationType: {rotationType} is not handled")
+            };
+        }
+        
+        IEnumerator RotatePieceCoroutine(RotationData rotationData,RotationType rotationType, Quaternion rotationToAdd)
         {
             _isMovingPiece = true;
             var pieceToMove = _piece;
             var elapsedTime = 0f;
             var rotationDuration = 3f;
-            var targetPivot = _rotationData.Column.NextPivot;
-            var centerPivot = _rotationData.Column.CenterPivot;
+            var targetPivot = rotationData.NextPivot;
+            var centerPivot = rotationData.CenterPivot;
             var originalTransform = transform;
-            var originalRotation = pieceToMove.transform.rotation;
-            var targetRotation = pieceToMove.transform.rotation * rotationToAdd;
+            var originalRotation = pieceToMove.transform.localRotation;
+            var targetRotation = rotationToAdd * pieceToMove.transform.rotation;
             var centerToOrigin = originalTransform.position - centerPivot.transform.position;
             var centerToTarget = targetPivot.transform.position - centerPivot.transform.position;
             var magnitude = centerToOrigin.magnitude;
@@ -49,13 +61,15 @@ namespace RubikCubeGame
                 var newRotation = Quaternion.Slerp(originalRotation, targetRotation, elapsedTime / rotationDuration);
                 var newPosition =  Vector3.Slerp(originNormalized, targetNormalized, elapsedTime / rotationDuration);
                 newPosition = centerPivot.transform.position + newPosition * magnitude;
-                pieceToMove.transform.SetPositionAndRotation(newPosition, newRotation);
+                pieceToMove.transform.position = newPosition;
+                pieceToMove.transform.localRotation = newRotation;
                 yield return null;
             }
 
             _isMovingPiece = false;
             targetPivot._piece = pieceToMove;
         }
+        
 
         [Serializable]
         class PivotData
