@@ -10,18 +10,19 @@ namespace RubikCubeGame
     {
         [SerializeField] float _rotationDuration = 0.5f;
 
-        [SerializeField] Pivot[] _pivots;
         [SerializeField] PivotGroup[] _faces;
         [SerializeField] PivotGroup[] _columns;
         [SerializeField] PivotGroup[] _rows;
         [SerializeField] PivotGroup[] _auxColumns;
 
+        Pivot[] _pivots;
         List<RotationCommand> _commandsHistory = new();
 
         int[] _faceValues;
 
         void Awake()
         {
+            _pivots = GetComponentsInChildren<Pivot>();
             _faceValues = new int[_faces.Length];
             for (int i = 0; i < _faces.Length; i++)
             {
