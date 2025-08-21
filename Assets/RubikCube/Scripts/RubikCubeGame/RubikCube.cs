@@ -1,12 +1,12 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RubikCubeGame
 {
     public class RubikCube : MonoBehaviour
     {
+        [SerializeField] float _rotationDuration = 0.5f;
+        
         [SerializeField] Pivot[] _pivots;
         [SerializeField] PivotGroup[] _faces;
         [SerializeField] PivotGroup[] _columns;
@@ -19,7 +19,7 @@ namespace RubikCubeGame
             var rotationToAdd = GetRotationToAdd(rotationType);
             foreach (var pivot in pivotsToRotate)
             {
-                pivot.RotatePiece(rotationType,rotationToAdd);
+                pivot.RotatePiece(rotationType,rotationToAdd, _rotationDuration);
             }
         }
 

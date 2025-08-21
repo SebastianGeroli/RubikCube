@@ -10,8 +10,9 @@ namespace RubikCubeGame
         [SerializeField] Piece _piece;
         [SerializeField] PivotData _rotationData;
         public int ID => _id;
-        
+
         bool _isMovingPiece;
+
         public void Awake()
         {
             _piece.SetID(_id);
@@ -22,12 +23,12 @@ namespace RubikCubeGame
             return _isMovingPiece;
         }
 
-        public void RotatePiece(RotationType rotationType,Quaternion rotationToAdd)
+        public void RotatePiece(RotationType rotationType, Quaternion rotationToAdd, float rotationDuration)
         {
             var rotationData = GetRotationData(rotationType);
-            StartCoroutine(RotatePieceCoroutine(rotationData,rotationType, rotationToAdd));
+            StartCoroutine(RotatePieceCoroutine(rotationData, rotationToAdd, rotationDuration));
         }
-        
+
         RotationData GetRotationData(RotationType rotationType)
         {
             return rotationType switch
@@ -38,13 +39,12 @@ namespace RubikCubeGame
                 _ => throw new ArgumentOutOfRangeException($"RotationType: {rotationType} is not handled")
             };
         }
-        
-        IEnumerator RotatePieceCoroutine(RotationData rotationData,RotationType rotationType, Quaternion rotationToAdd)
+
+        IEnumerator RotatePieceCoroutine(RotationData rotationData, Quaternion rotationToAdd, float rotationDuration)
         {
             _isMovingPiece = true;
             var pieceToMove = _piece;
             var elapsedTime = 0f;
-            var rotationDuration = 3f;
             var targetPivot = rotationData.NextPivot;
             var centerPivot = rotationData.CenterPivot;
             var originalTransform = transform;
@@ -59,7 +59,7 @@ namespace RubikCubeGame
             {
                 elapsedTime += Time.deltaTime;
                 var newRotation = Quaternion.Slerp(originalRotation, targetRotation, elapsedTime / rotationDuration);
-                var newPosition =  Vector3.Slerp(originNormalized, targetNormalized, elapsedTime / rotationDuration);
+                var newPosition = Vector3.Slerp(originNormalized, targetNormalized, elapsedTime / rotationDuration);
                 newPosition = centerPivot.transform.position + newPosition * magnitude;
                 pieceToMove.transform.position = newPosition;
                 pieceToMove.transform.localRotation = newRotation;
@@ -69,7 +69,7 @@ namespace RubikCubeGame
             _isMovingPiece = false;
             targetPivot._piece = pieceToMove;
         }
-        
+
 
         [Serializable]
         class PivotData
@@ -77,7 +77,7 @@ namespace RubikCubeGame
             [SerializeField] RotationData _column;
             [SerializeField] RotationData _row;
             [SerializeField] RotationData _auxColumn;
-            
+
             public RotationData Column => _column;
             public RotationData Row => _row;
             public RotationData AuxColumn => _auxColumn;
@@ -89,8 +89,8 @@ namespace RubikCubeGame
             [SerializeField] Pivot _nextPivot;
             [SerializeField] Pivot _centerPivot;
             [SerializeField] Pivot _previousPivot;
-            
-            
+
+
             public Pivot NextPivot => _nextPivot;
             public Pivot CenterPivot => _centerPivot;
             public Pivot PreviousPivot => _previousPivot;
